@@ -42,6 +42,26 @@ app.get("/search", function (req, res) {
   });
 });
 
+app.get("/genre", function (req, res) {
+  const options = {
+    headers: BASE_HEADER,
+    uri: process.env.HOST + "/genre/movie/list",
+    qs: {
+      api_key: process.env.THE_MOVIE_DB_API_KEY,
+      language: "ko-KR",
+    },
+  };
+
+  request.get(options, (err, httpResponse, body) => {
+    if (!err && httpResponse.statusCode == 200) {
+      res.send(httpResponse.body);
+    } else {
+      console.log(httpResponse.statusCode);
+      res.send(err);
+    }
+  });
+});
+
 function main() {
   getRequestToken();
 }
