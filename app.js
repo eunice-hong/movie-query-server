@@ -128,26 +128,60 @@ function getSessionId() {
     }
   });
 }
+// String title;
+// bool adult; //: false,
+// String? backdropPath; //: "/wESuRMxELPAwo56qFRcoyI4p20F.jpg",
+// List<dynamic> genreIds; //: ,
+// int id; //: 254302,
+// String originalLanguage; //: "en",
+// String originalTitle; //: "High-Rise",
+// String overview; //: "1975년 런던, 세계적인 건축가 안토니...",
+// double popularity; //: 16.548,
+// String? posterPath; //: "/mEc5KbzVbOPDyZeWt9k0kWwyNnc.jpg",
+// String? releaseDate; //: "2015-11-22",
+// bool video; //: false,
+// double voteAverage; //: 5.7,
+// int voteCount; //: 934
 
 async function writeMovieData(movieList) {
   const db = getDatabase();
   movieList.forEach((movie) => {
-    set(ref(db, "movies/" + movie.id), {
+    let genreIds;
+    if (movie.genre_ids != undefined && movie.genre_ids.size != 0) {
+      const idMap = {};
+      movie.genre_ids?.map((element) => {
+        idMap[element.toString()] = true;
+      });
+      genreIds = idMap;
+    } else {
+      genreIds = {};
+    }
+
+    const movieData = {
       title: movie.title,
       adult: movie.adult,
-      backdrop_path: movie.backdrop_path,
-      genre_ids: movie.genre_ids,
+      genre_ids: genreIds,
       id: movie.id,
       original_language: movie.original_language,
       original_title: movie.original_title,
       overview: movie.overview,
       popularity: movie.popularity,
-      poster_path: movie.poster_path,
-      release_date: movie.release_date,
       video: movie.video,
       vote_average: movie.vote_average,
       vote_count: movie.vote_count,
-    });
+    };
+
+    if (movie.backdrop_path != undefined) {
+      movieData["backdrop_path"] = movie.backdrop_path;
+    }
+    if (movie.poster_path != undefined) {
+      movieData["poster_path"] = movie.poster_path;
+    }
+    if (movie.release_date != undefined) {
+      movieData["release_date"] = movie.release_date;
+    }
+
+    set(ref(db, "movies/" + movie.id), movieData);
   });
 }
 
